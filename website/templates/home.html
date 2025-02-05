@@ -1,0 +1,84 @@
+{% extends "index.html" %}
+{% block title %} Home {% endblock  %}
+
+{% block content %} 
+
+<h1 align="center">Hello {{user.firstName}}</h1>
+<br>
+<input type="text" id="searchBar" class="form-control" placeholder="Search for a title..." onkeyup="searchEntries()">
+<br>
+<h1>Previous Entries</h1>
+<ul class="list-group list-group-flush" id="entry-list">
+{% for entry in entries %}
+    <li class="list-group-item entry-item">
+        <button class="btn btn-link" onclick="showDetails('{{ entry.id }}')">{{ entry.title }}</button>
+        <div id="entry-{{ entry.id }}" class="entry-details" style="display: none;">
+            <p><strong>Date:</strong> {{ entry.date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Trigger:</strong> {{ entry.trigger }}</p>
+            <p><strong>Preferred Approach:</strong> {{ entry.preferred_approach }}</p>
+            <p><strong>Better Approach:</strong> {{ entry.better_approach }}</p>
+            <p><strong>Resolution:</strong> {{ entry.Resolution }}</p>
+            <p><strong>Satisfaction Rate:</strong> {{ entry.Satisfaction_rate }}/10</p>
+            <button class="btn btn-secondary btn-sm" onclick="hideDetails('{{ entry.id }}')">Return</button>
+        </div>
+        <form method="POST" action="{{ url_for('views.delete_entry', entry_id=entry.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm" align="right">Delete</button>
+        </form>
+    </li>
+{% endfor %}
+<br>
+<h1>Create New Entry</h1>
+</ul>
+
+<form method='POST'>
+    <label for="title">Title</label>
+    <input type="text" name="title" class="form-control" required>
+    
+    <label for="trigger">Trigger</label>
+    <textarea name="trigger" class="form-control" required></textarea>
+    
+    <label for="preferred_approach">Preferred Approach</label>
+    <textarea name="preferred_approach" class="form-control"></textarea>
+    
+    <label for="better_approach">Better Approach</label>
+    <textarea name="better_approach" class="form-control"></textarea>
+    
+    <label for="Resolution">Resolution</label>
+    <textarea name="Resolution" class="form-control"></textarea>
+    
+    <label for="Satisfaction_rate">Satisfaction Rate (1-10)</label>
+    <input type="number" name="Satisfaction_rate" class="form-control" min="1" max="10" required>
+    
+    <br>
+    <div align="center">
+        <button type="submit" class="btn btn-primary">Add Entry</button>
+    </div>
+</form>
+
+<script>
+function showDetails(entryId) {
+    document.querySelectorAll('.entry-details').forEach(div => div.style.display = 'none');
+    document.getElementById('entry-' + entryId).style.display = 'block';
+}
+
+function hideDetails(entryId) {
+    document.getElementById('entry-' + entryId).style.display = 'none';
+}
+
+function searchEntries() {
+    let input = document.getElementById('searchBar').value.toLowerCase();
+    let entries = document.querySelectorAll('.entry-item');
+    
+    entries.forEach(entry => {
+        let title = entry.querySelector('button').textContent.toLowerCase();
+        if (title.includes(input)) {
+            entry.style.display = "block";
+        } else {
+            entry.style.display = "none";
+        }
+    });
+}
+
+</script>
+
+{% endblock  %}
